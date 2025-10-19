@@ -21,7 +21,7 @@ public class MiniAdminSwitch {
             switch (operacion) {
                 case "borrar":
                     String rutaRel = args[2];
-                    borrarSeguro(base, rutaRel); // TODO implementar
+                    borrarSeguro(base, rutaRel);
                     break;
 
                 case "renombrar":
@@ -77,21 +77,39 @@ public class MiniAdminSwitch {
         System.err.println("  java MiniAdminSwitch <rutaBase> permiso <rutaRel> <lectura|escritura|ejecucion> <on|off>");
     }
 
-    // TODO: borrarSeguro
-    // 1. Crear File objetivo = new File(base, rutaRel)
-    // 2. Si no existe -> lanzar IOException("No existe")
-    // 3. Si es directorio:
-    //    - listar contenido
-    //    - si null -> lanzar IOException("No se pudo listar")
-    //    - si tiene elementos -> lanzar IOException("Directorio no vacío")
-    // 4. Intentar borrar con delete()
-    //    - si true -> mostrar mensaje de éxito
-    //    - si false -> lanzar IOException("No se pudo borrar")
-    // 5. Capturar SecurityException y envolver en IOException
-    // 6. finally -> mostrar mensaje "[borrar] Fin"
     private static void borrarSeguro(File base, String rutaRel) throws IOException {
-        // TODO implementar
-        throw new IOException("TODO borrarSeguro");
+        File objetivo = new File(base, rutaRel);
+        try {
+            if (objetivo.exists()) {
+                if (objetivo.isDirectory()) {//DIRECTORIO
+                    String[] items = objetivo.list();
+                    if (items != null) {
+                        if (items.length > 0) {
+                            for (String item : items) {
+                                System.out.println(" - " + item);
+                            }
+                            throw new IOException("Directorio no vacío");
+                        } else {
+                            if (objetivo.delete()) {
+                                System.out.println("El directorio " + objetivo.getName() + " ha sido eliminado.");
+                            }
+                        }
+                    } else {
+                        throw new IOException("No se pudo listar");
+                    }
+                } else {//FICHERO
+                    if (objetivo.delete()) {
+                        System.out.println("El fichero " + objetivo.getName() + " ha sido eliminado.");
+                    } else {
+                        throw new IOException("No se pudo borrar");
+                    }
+                }
+            } else {
+                throw new IOException("No existe");
+            }
+        } finally {
+            System.out.println("[borrar] Fin");
+        }
     }
 
     // TODO: renombrarSeguro

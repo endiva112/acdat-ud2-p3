@@ -77,6 +77,12 @@ public class MiniAdminSwitch {
         System.err.println("  java MiniAdminSwitch <rutaBase> permiso <rutaRel> <lectura|escritura|ejecucion> <on|off>");
     }
 
+    /**
+     * Se le debe pasar la ruta donde trabajará y la ruta del item a borrar, sea carpeta o fichero
+     * @param base ruta del directorio donde trabajará
+     * @param rutaRel ruta del item a borrar
+     * @throws IOException
+     */
     private static void borrarSeguro(File base, String rutaRel) throws IOException {
         File objetivo = new File(base, rutaRel);
         try {
@@ -112,19 +118,40 @@ public class MiniAdminSwitch {
         }
     }
 
-    // TODO: renombrarSeguro
-    // 1. Crear File origen y destino
-    // 2. Si origen no existe -> mensaje de error
-    // 3. Si destino existe -> mensaje de error
-    // 4. Si el directorio padre del destino no existe -> mensaje de error
-    // 5. Usar renameTo()
-    //    - si true -> mensaje de éxito
-    //    - si false -> mensaje de fallo
-    // 6. Capturar SecurityException
-    // 7. finally -> mensaje "[renombrar] Fin"
-    private static void renombrarSeguro(File base, String origenRel, String destinoRel) {
-        // TODO implementar
-        System.err.println("TODO renombrarSeguro");
+    /**
+     * Se le debe pasar la ruta donde trabajará, la ruta del archivo a renombrar y la ruta de a donde lo moverás con un nombre nuevo
+     * @param base ruta del directorio donde trabajará
+     * @param origenRel ruta del item a renombrar
+     * @param destinoRel ruta o nombre al que se renombra
+     */
+    private static void renombrarSeguro(File base, String origenRel, String destinoRel) throws IOException {
+        try {
+            File origen = new File(base, origenRel);
+            File destino = new File(base, destinoRel);
+
+            if (!origen.exists()) {
+                throw new IOException("El archivo que intentas renombrar no existe");
+            } else if (destino.exists()) {//Existe
+                throw new IOException("Ya existe un archivo con dicho nombre donde desea renombrar, elija otro nombre");
+            } else {
+                File padre = destino.getParentFile();
+                /* Si padre es = a null, quiere decir que el usuario pasó como argumento la carpeta actual, el campo solo
+                tiene valor si destino tiene realmente una ruta padre
+                Dicho de otra forma -> (padre == null) significa que destino no tendría directorio padre*/
+                if (padre != null && !padre.exists()) {//compruebo que destino TIENE directorio padre Y que este NO exista
+                    throw new IOException("El directorio de destino no existe");
+                }
+                if (origen.renameTo(destino)) {
+                    System.out.println("Se ha renombrado: " + origen.getName() + " a " + destino.getName() + " con éxito.");
+                } else {
+                    throw new IOException("No se ha podido renombrar");
+                }
+            }
+        } catch (SecurityException e) {
+            throw new IOException("Error de permisos al renombrar", e);
+        } finally {
+            System.out.println("[renombrar] Fin");
+        }
     }
 
     // TODO: cambiarPermiso

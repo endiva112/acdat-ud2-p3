@@ -31,9 +31,9 @@ public class MiniAdminSwitch {
                     }
                     String origenRel = args[2];
                     String destinoRel = args[3];
-                    renombrarSeguro(base, origenRel, destinoRel); // TODO implementar
+                    renombrarSeguro(base, origenRel, destinoRel);
                     break;
-
+                
                 case "permiso":
                     if (args.length < 5) {
                         System.err.println("Faltan <rutaRel> <permiso> <on|off>.");
@@ -165,7 +165,17 @@ public class MiniAdminSwitch {
     // 4. Mostrar resultado según boolean devuelto
     // 5. Capturar SecurityException
     // 6. finally -> mensaje "[permiso] Fin"
+
+    /**
+     * Se ---
+     * @param base ruta del directorio donde trabajará
+     * @param rutaRel ruta del item cuyos permisos serán modificados
+     * @param permiso permiso a modificar
+     * @param activar on o off, on = permiso concedido, of = permiso revocado
+     */
     private static void cambiarPermiso(File base, String rutaRel, String permiso, boolean activar) {
+
+
         // TODO implementar
         System.err.println("TODO cambiarPermiso (" + permiso + " -> " + (activar ? "on" : "off") + ")");
     }

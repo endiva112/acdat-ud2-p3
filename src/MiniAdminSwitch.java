@@ -124,59 +124,68 @@ public class MiniAdminSwitch {
      * @param origenRel ruta del item a renombrar
      * @param destinoRel ruta o nombre al que se renombra
      */
-    private static void renombrarSeguro(File base, String origenRel, String destinoRel) throws IOException {
+    private static void renombrarSeguro(File base, String origenRel, String destinoRel) {
         try {
             File origen = new File(base, origenRel);
             File destino = new File(base, destinoRel);
 
             if (!origen.exists()) {
-                throw new IOException("El archivo que intentas renombrar no existe");
+                System.err.println("El archivo que intentas renombrar no existe");
             } else if (destino.exists()) {//Existe
-                throw new IOException("Ya existe un archivo con dicho nombre donde desea renombrar, elija otro nombre");
+                System.err.println("Ya existe un archivo con dicho nombre donde desea renombrar, elija otro nombre");
             } else {
                 File padre = destino.getParentFile();
                 /* Si padre es = a null, quiere decir que el usuario pasó como argumento la carpeta actual, el campo solo
                 tiene valor si destino tiene realmente una ruta padre
                 Dicho de otra forma -> (padre == null) significa que destino no tendría directorio padre*/
                 if (padre != null && !padre.exists()) {//compruebo que destino TIENE directorio padre Y que este NO exista
-                    throw new IOException("El directorio de destino no existe");
+                    System.err.println("El directorio de destino no existe");
                 }
                 if (origen.renameTo(destino)) {
                     System.out.println("Se ha renombrado: " + origen.getName() + " a " + destino.getName() + " con éxito.");
                 } else {
-                    throw new IOException("No se ha podido renombrar");
+                    System.err.println("No se ha podido renombrar");
                 }
             }
         } catch (SecurityException e) {
-            throw new IOException("Error de permisos al renombrar", e);
+            System.err.println("Error de permisos al renombrar");
         } finally {
             System.out.println("[renombrar] Fin");
         }
     }
 
-    // TODO: cambiarPermiso
-    // 1. Crear File f = new File(base, rutaRel)
-    // 2. Si no existe -> mensaje de error
-    // 3. Usar switch(permiso):
-    //    - lectura   -> setReadable(activar, false)
-    //    - escritura -> setWritable(activar, false)
-    //    - ejecucion -> setExecutable(activar, false)
-    //    - otro -> mensaje "Permiso no válido"
-    // 4. Mostrar resultado según boolean devuelto
-    // 5. Capturar SecurityException
-    // 6. finally -> mensaje "[permiso] Fin"
-
     /**
-     * Se ---
+     * Se le debe pasar la ruta donde trabajará, la ruta del item cuyos permisos se modificarán, el permiso a editar y si lo activa o desactiva
      * @param base ruta del directorio donde trabajará
      * @param rutaRel ruta del item cuyos permisos serán modificados
      * @param permiso permiso a modificar
      * @param activar on o off, on = permiso concedido, of = permiso revocado
      */
     private static void cambiarPermiso(File base, String rutaRel, String permiso, boolean activar) {
-
-
-        // TODO implementar
-        System.err.println("TODO cambiarPermiso (" + permiso + " -> " + (activar ? "on" : "off") + ")");
+        try {
+            File f = new File(base, rutaRel);
+            if (!f.exists()) {
+                System.err.println("El archivo que intentas eliminar no existe");
+            } else {
+                switch (permiso) {
+                    case "lectura":
+                        f.setReadable(activar);
+                        break;
+                    case "escritura":
+                        f.setWritable(activar);
+                        break;
+                    case "ejecucion":
+                        f.setExecutable(activar);
+                        break;
+                    default:
+                        System.err.println("Permiso no válido");
+                }
+            }
+        } catch (SecurityException e) {
+            System.err.println("No se ha permitido eliminar el archivo");
+        } finally {
+            System.out.println("cambiarPermiso (" + permiso + " -> " + (activar ? "on" : "off") + ")");
+            System.out.println("[cambiarPermiso] Fin");
+        }
     }
 }
